@@ -1,0 +1,131 @@
+.rs {
+    color: white;
+    background: #001030;
+    position: relative;
+    height: 75vh;
+    overflow-y: scroll;
+}
+
+.rs-profile {
+     padding-top: 60px;
+    text-align: center;
+    min-width: 70px;
+    margin: auto;
+}
+
+.rs-profile img {
+   width: 110px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+}
+
+.rs-profile h3 {
+    font-size: 18px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin: 5px 0;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+}
+
+.rs-profile p {
+  /* font-size: 10px;
+    opacity: 80%;
+    font-weight: 300; */
+    font-size: 12px;
+    opacity: 0.8;
+    font-weight: 300;
+    line-height: 1.4;
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+.rs-profile .dot {
+    width: 8px;
+    height: 8px;
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 15px 20px;
+}
+
+.rs-media {
+    padding: 0px 20px;
+    font-size: 13px;
+}
+
+.media-title {
+    font-size: 13px;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.media-grid img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 4px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.media-grid img:hover {
+    transform: scale(1.03);
+}
+
+.logout-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #077EFF;
+    color: white;
+    padding: 10px 40px;
+    font-weight: 400;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    font-size: 12px;
+    transition: background 0.2s;
+    width: calc(100% - 40px);
+    max-width: 200px;
+}
+
+.logout-btn:hover {
+    background: #0669d4;
+}
+
+/* Scrollbar styling */
+.rs::-webkit-scrollbar,
+.media-grid::-webkit-scrollbar {
+    width: 5px;
+}
+
+.rs::-webkit-scrollbar-thumb,
+.media-grid::-webkit-scrollbar-thumb {
+    background-color: #077EFF;
+    border-radius: 3px;
+}
+
+.rs::-webkit-scrollbar-track,
+.media-grid::-webkit-scrollbar-track {
+    background-color: transparent;
+}
