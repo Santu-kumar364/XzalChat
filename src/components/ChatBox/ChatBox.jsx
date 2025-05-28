@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+ 
+
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./ChatBox.css";
 import assets from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
@@ -7,39 +9,81 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { toast } from "react-toastify";
 import { db } from "../../config/firebase";
+import { toast } from "react-toastify";
+import upload from "../../liberaries/upload";
 
 const ChatBox = () => {
   const { userData, chatUser, messages, setMessages, messageId } =
     useContext(AppContext);
   const [input, setInput] = useState("");
-  const [isMounted, setIsMounted] = useState(false);
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
-  }, []);
+    if (!messageId) return;
+
+    const unsubscribe = onSnapshot(doc(db, "messages", messageId), (docSnap) => {
+      if (docSnap.exists()) {
+        setMessages(docSnap.data().messages || []);
+        scrollToBottom();
+      }
+    });
+
+    return () => unsubscribe();
+  }, [messageId]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleImageUpload = async (image) => {
+    try {
+      toast.info("Uploading image...");
+      const url = await upload(image);
+      toast.success("Image uploaded!");
+      return url;
+    } catch (error) {
+      toast.error("Image upload failed");
+      console.error("Upload error:", error);
+      return null;
+    }
+  };
 
   const sendMessage = async () => {
+    if ((!input.trim() && !image) || !messageId) {
+      toast.warn("Cannot send empty message");
+      return;
+    }
+
+    let uploadedImageUrl = "";
+    if (image) uploadedImageUrl = await handleImageUpload(image);
+
+    const newMessage = {
+      sId: userData.id,
+      content: {
+        text: input.trim(),
+        imageUrl: uploadedImageUrl,
+      },
+      timestamp: new Date().toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
+      type: image ? "image" : "text",
+      createdAt: Date.now(),
+    };
+
+    const lastMessage =
+      input.length > 25
+        ? `${input.slice(0, 25)}...`
+        : input || "Image";
+
     try {
-      if (!input.trim() || !messageId) return;
-
-      const lastMessage = input.length > 25 ? `${input.slice(0, 25)}...` : input;
-      const newMessage = {
-        sId: userData.id,
-        content: input,
-        timestamp: new Date().toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        }),
-        type: "text",
-        createdAt: new Date(),
-      };
-
       await Promise.all([
         updateDoc(doc(db, "messages", messageId), {
           messages: arrayUnion(newMessage),
@@ -48,61 +92,60 @@ const ChatBox = () => {
         updateChatDocument(chatUser.id, messageId, lastMessage, false),
       ]);
 
-      if (isMounted) {
-        setMessages((prev) => [...prev, newMessage]);
-        setInput("");
-      }
-    } catch (error) {
-      console.error("Message send error:", error);
-      if (isMounted) {
-        toast.error("Failed to send message");
-      }
+      setInput("");
+      setImage(null);
+      setPreview(null);
+      scrollToBottom();
+    } catch (err) {
+      console.error("sendMessage Error:", err);
+      toast.error("Failed to send message. Check console for details.");
     }
   };
 
   const updateChatDocument = async (userId, messageId, lastMessage, isSender) => {
     const userChatRef = doc(db, "chats", userId);
-
     try {
-      const userChatsSnapshot = await getDoc(userChatRef);
-      let chatData = [];
+      const chatSnap = await getDoc(userChatRef);
+      let chatData = chatSnap.exists() ? [...chatSnap.data().chatData] : [];
 
-      if (userChatsSnapshot.exists()) {
-        chatData = [...userChatsSnapshot.data().chatData];
-      }
-
-      const chatIndex = chatData.findIndex((c) => c.messageId === messageId);
-      const updatedChat = {
+      const index = chatData.findIndex((c) => c.messageId === messageId);
+      const updated = {
         rId: isSender ? chatUser.id : userData.id,
         lastMessage,
-        updatedAt: new Date(),
+        updatedAt:Date.now(),
         messageId,
         messageSeen: isSender,
       };
 
-      if (chatIndex !== -1) {
-        chatData[chatIndex] = updatedChat;
-      } else {
-        chatData.push(updatedChat);
-      }
+      if (index !== -1) chatData[index] = updated;
+      else chatData.push(updated);
 
       await updateDoc(userChatRef, { chatData });
-    } catch (error) {
-      console.error("Error updating chat document:", error);
+    } catch (err) {
+      console.error("Chat update failed", err);
     }
   };
 
-  useEffect(() => {
-    if (!messageId || !isMounted) return;
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    const unsubscribe = onSnapshot(doc(db, "messages", messageId), (doc) => {
-      if (doc.exists() && isMounted) {
-        setMessages(doc.data().messages || []);
-      }
-    });
+    const fileType = file.type;
+    if (!fileType.startsWith("image/")) {
+      toast.error("Only image files are allowed.");
+      return;
+    }
 
-    return () => unsubscribe();
-  }, [messageId, isMounted]);
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
 
   if (!chatUser) {
     return (
@@ -118,66 +161,73 @@ const ChatBox = () => {
       <div className="chat-user">
         <img
           src={chatUser.avatar || assets.Myphoto}
-          alt="User profile"
-          onError={(e) => {
-            e.target.src = assets.Myphoto;
-          }}
+          alt="User"
+          onError={(e) => (e.target.src = assets.Myphoto)}
         />
         <p>
           {chatUser.name || chatUser.username}
-          <img className="dot" src={assets.green_dot} alt="Online status" />
+          <img className="dot" src={assets.green_dot} alt="Online" />
         </p>
         <img src={assets.help_icon} alt="Help" className="help" />
       </div>
 
-      <div className="chat-msg">
+      <div className="chat-messages">
         {messages.length > 0 ? (
-          messages.map((message, index) => (
+          messages.map((msg, idx) => (
             <div
-              key={index}
-              className={message.sId === userData.id ? "s-msg" : "r-msg"}
+              key={idx}
+              className={`message ${
+                msg.sId === userData.id ? "sent" : "received"
+              }`}
             >
-              {message.type === "text" ? (
-                <p className="msg">{message.content}</p>
-              ) : (
-                <img className="img-msg" src={message.content} alt="" />
+              {msg.content.imageUrl && (
+                <img className="uploaded-image" src={msg.content.imageUrl} alt="uploaded" />
               )}
-              <div>
-                <img
-                  src={
-                    message.sId === userData.id
-                      ? userData.avatar || assets.profile_img
-                      : chatUser.avatar || assets.profile_img
-                  }
-                  alt=""
-                />
-                <p>{message.timestamp}</p>
-              </div>
+              {msg.content.text && (
+                <p className="text-message">{msg.content.text}</p>
+              )}
+              <span>{msg.timestamp}</span>
             </div>
           ))
         ) : (
           <div className="no-messages">
-            Start a new conversation with {chatUser.name || chatUser.username}
+            Start conversation with {chatUser.name || chatUser.username}
           </div>
         )}
+        <div ref={messagesEndRef}></div>
       </div>
 
       <div className="chat-input">
+        {preview && (
+          <div className="image-preview">
+            <img src={preview} alt="Preview" />
+            <button onClick={() => { setImage(null); setPreview(null); }}>✕</button>
+          </div>
+        )}
         <input
           type="text"
-          placeholder="Type a message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Type a message..."
+          onKeyDown={handleKeyDown}
         />
-        <input type="file" id="image" accept="image/png, image/jpeg" hidden />
-        <label htmlFor="image">
-          <img src={assets.gallery_icon} alt="" />
+        <input
+          type="file"
+          id="imageUpload"
+          accept="image/*"
+          hidden
+          onChange={handleFileChange}
+        />
+        <label htmlFor="imageUpload">
+          <img src={assets.gallery_icon} alt="Upload" />
         </label>
-        <img onClick={sendMessage} src={assets.send_button} alt="" />
+        <button onClick={sendMessage} disabled={!input.trim() && !image}>
+          <img src={assets.send_button} alt="Send" />
+        </button>
       </div>
     </div>
   );
 };
 
 export default ChatBox;
+

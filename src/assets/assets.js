@@ -16,6 +16,7 @@ import menu_icon from './menu_icon.png'
 import arrow_icon from './arrow_icon.png'
 import green_dot from './green_dot.png'
 import Myphoto from './Myphoto.jpg'
+import chat_logo from './chat_logo.jpeg'
 
 const assets = {
     avatar_icon,
@@ -35,7 +36,8 @@ const assets = {
     menu_icon,
     arrow_icon,
     green_dot,
-    Myphoto
+    Myphoto,
+    chat_logo
 }
 
 export default assets;
