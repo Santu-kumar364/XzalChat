@@ -4,12 +4,12 @@ import { getFirestore, setDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB1qYUl-_fOLUIV_q6TLLb6xR2qlbxH5us",
-  authDomain: "xzalchat-6089a.firebaseapp.com",
-  projectId: "xzalchat-6089a",
-  storageBucket: "xzalchat-6089a.firebasestorage.app",
-  messagingSenderId: "682562327955",
-  appId: "1:682562327955:web:41a34e0e2caf2af5700466",
+  apiKey: "AIzaSyCBmdD2PbinUYFR_cpBSl2VwpJ64zfVyxU",
+  authDomain: "xzalchat-35d25.firebaseapp.com",
+  projectId: "xzalchat-35d25",
+  storageBucket: "xzalchat-35d25.firebasestorage.app",
+  messagingSenderId: "259998782249",
+  appId: "1:259998782249:web:98bb1bd1f41ea535049d38"
 };
 
 // Initialize Firebase

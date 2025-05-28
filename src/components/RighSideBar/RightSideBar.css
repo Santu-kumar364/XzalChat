@@ -6,28 +6,11 @@
     overflow-y: scroll;
 }
 
-.rs-profile {
-     padding-top: 60px;
-    text-align: center;
-    min-width: 70px;
-    margin: auto;
-}
+ 
 
-.rs-profile img {
-   width: 110px;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-}
+ 
 
-.rs-profile h3 {
-    font-size: 18px;
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    margin: 5px 0;
-}
+ 
 
 .dot {
     width: 8px;
@@ -35,9 +18,7 @@
 }
 
 .rs-profile p {
-  /* font-size: 10px;
-    opacity: 80%;
-    font-weight: 300; */
+    
     font-size: 12px;
     opacity: 0.8;
     font-weight: 300;
@@ -51,12 +32,7 @@
     height: 8px;
 }
 
-.divider {
-    border: none;
-    height: 1px;
-    background-color: rgba(255, 255, 255, 0.1);
-    margin: 15px 20px;
-}
+ 
 
 .rs-media {
     padding: 0px 20px;
@@ -113,7 +89,7 @@
     background: #0669d4;
 }
 
-/* Scrollbar styling */
+ 
 .rs::-webkit-scrollbar,
 .media-grid::-webkit-scrollbar {
     width: 5px;
@@ -128,4 +104,74 @@
 .rs::-webkit-scrollbar-track,
 .media-grid::-webkit-scrollbar-track {
     background-color: transparent;
+} 
+
+  
+
+
+ 
+ 
+
+.rs-profile {
+  padding: 20px;
+  text-align: center;
+}
+
+.rs-profile img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border: 3px solid #4CAF50;
+}
+
+.rs-profile h3 {
+  margin: 0 0 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+ 
+
+ 
+.divider {
+  border: none;
+  height: 1px;
+  background: #e0e0e0;
+  margin: 15px 20px;
+}
+
+ 
+
+ 
+
+ 
+ 
+
+ 
+
+.no-media {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  margin: 20px 0;
+}
+
+/* .logout-btn {
+  margin: 20px;
+  padding: 10px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+} */
+
+.logout-btn:hover {
+  background: #d32f2f;
 }

@@ -1,4 +1,4 @@
- 
+
 
  .ls {
     background: #001030;
@@ -116,7 +116,7 @@
     background-color: #002670;
 }
 
-/* Friends/Chat items styles */
+ 
 .friends {
     display: flex;
     align-items: center;
@@ -201,8 +201,7 @@
 .friends:hover .time {
     color: white !important;
 }
-
-/* Status messages */
+ 
 .no-chats,
 .loading,
 .no-results {
@@ -232,4 +231,7 @@
 
 .friends:hover .friend-time {
   color: white;
-}
+} 
+
+
+  
