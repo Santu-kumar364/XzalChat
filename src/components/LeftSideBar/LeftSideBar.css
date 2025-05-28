@@ -1,278 +1,4 @@
-/* 
-
-.ls {
-    background: #001030;
-    color: white;
-    height: 75vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.ls-top {
-    padding: 20px;
-    position: sticky;
-    top: 0;
-    background: #001030;
-    z-index: 1;
-}
-
-.ls-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.ls-nav .logo {
-    height: 25px;
-    object-fit: contain;
-}
-
-.ls-nav .menu{
-    position: relative;
-    padding: 10px 0px;
-}
-
-.ls-nav .menu img {
-    max-height: 20px;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s;
-}
-
-.ls-nav .menu img:hover {
-    opacity: 1;
-}
-
-.menu .sub-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 130px;
-    padding: 20px;
-    border-radius: 7px;
-    background-color: white;
-    color: black;
-     
-
-}
-
-.sub-menu hr{
-    border: none;
-    height: 1px;
-    background: #040404;
-    margin: 8px 0px;
-}
-
-.sub-menu p{
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.ls-search {
-    background-color: #002670;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin: 0 20px 10px;
-}
-
-.ls-search img {
-    width: 16px;
-    opacity: 0.7;
-}
-
-.ls-search input {
-    width: 100%;
-    background-color: transparent;
-    border: none;
-    color: white;
-    outline: none;
-    font-size: 13px;
-}
-
-.ls-search input::placeholder {
-    color: #c8c8c8;
-}
-
-.ls-list {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-bottom: 10px;
-}
-
-.friends {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.friends:hover {
-    background-color: #0077ff;
-}
-
-.friends img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.friend-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-}
-
-.friend-name-time {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.friend-name-time p {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.friend-name-time .time {
-    font-size: 11px;
-    color: #9f9f9f;
-}
-
-.last-message-unread {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.last-message {
-    font-size: 12px;
-    color: #9f9f9f;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 70%;
-}
-
-.unread-count {
-    background-color: #0077ff;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: bold;
-}
-
-.friends:hover .last-message,
-.friends:hover .time {
-    color: white !important;
-}
-
  
-.ls-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.ls-list::-webkit-scrollbar-thumb {
-    background-color: #0077ff;
-    border-radius: 3px;
-}
-
-.ls-list::-webkit-scrollbar-track {
-    background-color: #002670;
-} 
- 
-
-
-
-
-
-.no-chats {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-.friends.active {
-  background-color: #f0f0f0;
-}
-
-.loading, .no-results {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-.friends {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.friends:hover {
-  background-color: #f5f5f5;
-}
-
-.friends img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-}
-
-.friend-info {
-  flex: 1;
-}
-
-.friend-name {
-  margin: 0;
-  font-weight: 500;
-}
-
-.friend-time {
-  margin: 0;
-  font-size: 12px;
-  color: #666;
-}
-
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
  .ls {
     background: #001030;
@@ -484,4 +210,26 @@
     padding: 20px;
     color: #9f9f9f;
     font-size: 14px;
+}
+
+
+.unread-badge {
+  width: 8px;
+  height: 8px;
+  background-color: #0077ff;
+  border-radius: 50%;
+  margin-left: auto;
+}
+
+.friend-time {
+  font-size: 12px;
+  color: #9f9f9f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.friends:hover .friend-time {
+  color: white;
 }

@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import "./Chat.css";
+import ChatBox from "../../components/ChatBox/ChatBox";
 import LeftSideBar from "../../components/LeftSideBar/LeftSideBar";
 import RightSideBar from "../../components/RighSideBar/RightSideBar";
-import ChatBox from "../../components/ChatBox/ChatBox";
+ 
 
 const Chat = () => {
   return (
