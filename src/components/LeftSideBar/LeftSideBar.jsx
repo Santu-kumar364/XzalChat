@@ -1,4 +1,4 @@
-// LeftSideBar.js
+ 
 import React, { useContext, useState, useEffect } from "react";
 import "./LeftSideBar.css";
 import assets from "../../assets/assets";
@@ -23,138 +23,184 @@ import { toast } from "react-toastify";
 const LeftSideBar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { userData, chatUser, setChatUser, setMessageId } =
-    useContext(AppContext);
-  const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [existingChats, setExistingChats] = useState([]);
+
+  const {
+    userData,
+    chatUser,
+    setChatUser,
+    setMessageId,
+    chatDisplay,
+    setChatDisplay,
+  } = useContext(AppContext);
 
   useEffect(() => {
     if (!userData?.id) return;
 
-    const chatRef = doc(db, "chats", userData.id);
-    const unsubscribe = onSnapshot(chatRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const fetchChatsWithUserData = async () => {
-          try {
-            const chatData = snapshot.data().chatData || [];
-            const chatsWithUserData = await Promise.all(
-              chatData.map(async (chat) => {
-                try {
-                  const userRef = doc(db, "users", chat.rId);
-                  const userSnap = await getDoc(userRef);
-                  return {
-                    ...chat,
-                    userData: userSnap.exists() ? userSnap.data() : null,
-                  };
-                } catch (error) {
-                  return { ...chat, userData: null };
-                }
-              })
-            );
+    const unsubscribe = onSnapshot(
+      doc(db, "chats", userData.id),
+      async (snapshot) => {
+        if (!snapshot.exists()) return;
 
-            const sortedChats = chatsWithUserData.sort(
-              (a, b) => b.updatedAt - a.updatedAt
-            );
-            setExistingChats(sortedChats);
-          } catch (error) {
-            console.error("Error processing chats:", error);
-          }
-        };
+        const chatData = snapshot.data().chatData || [];
+        const chatsWithUserData = await Promise.all(
+          chatData.map(async (chat) => {
+            try {
+              const userSnap = await getDoc(doc(db, "users", chat.rId));
+              return {
+                ...chat,
+                userData: userSnap.exists() ? userSnap.data() : null,
+              };
+            } catch {
+              return { ...chat, userData: null };
+            }
+          })
+        );
 
-        fetchChatsWithUserData();
+        setExistingChats(
+          chatsWithUserData.sort((a, b) => b.updatedAt - a.updatedAt)
+        );
       }
-    });
+    );
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, [userData?.id]);
 
-  const inputHandler = (e) => {
-    const searchTerm = e.target.value.trim().toLowerCase();
-    setSearchQuery(searchTerm);
+  const searchAllUsers = async (term) => {
+    try {
+      const q = query(
+        collection(db, "users"),
+        where("username", ">=", term),
+        where("username", "<=", term + "\uf8ff")
+      );
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs
+        .filter((doc) => doc.id !== userData.id)
+        .map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error("Error searching users:", error);
+      return [];
+    }
+  };
 
-    if (searchTerm.length === 0) {
+  const inputHandler = async (e) => {
+    const term = e.target.value.trim().toLowerCase();
+    setSearchQuery(term);
+
+    if (!term) {
       setSearchResults([]);
       setIsSearching(false);
       return;
     }
 
     setIsSearching(true);
-
-    const filteredChats = existingChats.filter((chat) => {
-      const name = chat.userData?.name?.toLowerCase() || "";
-      const username = chat.userData?.username?.toLowerCase() || "";
-      const email = chat.userData?.email?.toLowerCase() || "";
-      return (
-        name.includes(searchTerm) ||
-        username.includes(searchTerm) ||
-        email.includes(searchTerm)
+    const filtered = existingChats.filter(({ userData }) => {
+      const fields = [userData?.name, userData?.username, userData?.email].map(
+        (f) => f?.toLowerCase() || ""
       );
+      return fields.some((field) => field.includes(term));
     });
 
-    setSearchResults(filteredChats);
+    if (filtered.length) {
+      setSearchResults(filtered);
+    } else {
+      const allUsers = await searchAllUsers(term);
+      setSearchResults(
+        allUsers.map((user) => ({
+          rId: user.id,
+          userData: user,
+          lastMessage: "",
+          updatedAt: Date.now(),
+          messageId: null,
+          messageSeen: true,
+        }))
+      );
+    }
+
     setIsSearching(false);
   };
 
   const addChat = async (user) => {
     try {
-      const messagesRef = collection(db, "messages");
-      const chatsRef = collection(db, "chats");
-      const newMessageRef = doc(messagesRef);
+      const newMessageRef = doc(collection(db, "messages"));
+      await setDoc(newMessageRef, {
+        createdAt: serverTimestamp(),
+        messages: [],
+      });
+
+      const chatObject = {
+        lastMessage: "",
+        rId: user.id,
+        updatedAt: Date.now(),
+        messageId: newMessageRef.id,
+        messageSeen: true,
+      };
 
       await Promise.all([
-        setDoc(newMessageRef, {
-          createdAt: serverTimestamp(),
-          messages: [],
+        updateDoc(doc(db, "chats", user.id), {
+          chatData: arrayUnion({ ...chatObject, rId: userData.id }),
         }),
-        updateDoc(doc(chatsRef, user.id), {
-          chatData: arrayUnion({
-            lastMessage: "",
-            rId: userData.id,
-            updatedAt: Date.now(),
-            messageId: newMessageRef.id,
-            messageSeen: true,
-          }),
-        }),
-        updateDoc(doc(chatsRef, userData.id), {
-          chatData: arrayUnion({
-            lastMessage: "",
-            rId: user.id,
-            updatedAt: Date.now(),
-            messageId: newMessageRef.id,
-            messageSeen: true,
-          }),
+        updateDoc(doc(db, "chats", userData.id), {
+          chatData: arrayUnion(chatObject),
         }),
       ]);
 
-      setChatUser({
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        avatar: user.avatar,
-      });
+      setChatUser(user);
       setMessageId(newMessageRef.id);
+      setChatDisplay(true);
     } catch (error) {
       toast.error(error.message);
     }
   };
 
-  const handleChatSelect = (chat) => {
+  const handleChatSelect = async (chat) => {
+  if (chat.messageId) {
     setMessageId(chat.messageId);
     setChatUser({
       id: chat.rId,
-      name: chat.userData?.name,
-      username: chat.userData?.username,
-      avatar: chat.userData?.avatar,
+      ...chat.userData,
     });
-    setSearchQuery("");
-    setSearchResults([]);
-    setIsSearching(false);
-  };
+  } else {
+    await addChat(chat.userData);
+  }
+
+  setSearchQuery("");
+  setSearchResults([]);
+  setIsSearching(false);
+  
+  // Show chat box on mobile
+  if (window.innerWidth <= 768) {
+    setChatDisplay(true);
+  }
+};
+
+  const renderChatList = (list) =>
+    list.map((chat) => (
+      <div
+        key={chat.rId || chat.messageId}
+        className={`friends ${chatUser?.id === chat.rId ? "active" : ""}`}
+        onClick={() => handleChatSelect(chat)}
+      >
+        <img
+          src={chat.userData?.avatar || assets.profile_img}
+          alt={chat.userData?.name || chat.userData?.username}
+          onError={(e) => (e.target.src = assets.profile_img)}
+        />
+        <div className="friend-info">
+          <p className="friend-name">
+            {chat.userData?.name || chat.userData?.username}
+          </p>
+          <p className="friend-time">{chat.lastMessage || "No messages yet"}</p>
+        </div>
+        {!chat.messageSeen && <span className="unread-badge"></span>}
+      </div>
+    ));
 
   return (
-    <div className="ls">
+    <div className={`ls ${chatDisplay ? "hidden" : ""}`}>
       <div className="ls-top">
         <div className="ls-nav">
           <img src="/chat_logo.jpeg" alt="Chat App Logo" className="logo" />
@@ -176,69 +222,25 @@ const LeftSideBar = () => {
         <div className="ls-search">
           <img src={assets.search_icon} alt="Search" />
           <input
-            onChange={inputHandler}
             type="text"
             placeholder="Search by username or email..."
             value={searchQuery}
+            onChange={inputHandler}
           />
         </div>
       </div>
 
       <div className="ls-list">
-        {searchQuery.length > 0 ? (
+        {searchQuery ? (
           isSearching ? (
             <div className="loading">Searching...</div>
-          ) : searchResults.length > 0 ? (
-            searchResults.map((chat) => (
-              <div
-                onClick={() => handleChatSelect(chat)}
-                className={`friends ${
-                  chatUser?.id === chat.rId ? "active" : ""
-                }`}
-                key={chat.messageId}
-              >
-                <img
-                  src={chat.userData?.avatar || assets.profile_img}
-                  alt={chat.userData?.name || chat.userData?.username}
-                  onError={(e) => (e.target.src = assets.profile_img)}
-                />
-                <div className="friend-info">
-                  <p className="friend-name">
-                    {chat.userData?.name || chat.userData?.username}
-                  </p>
-                  <p className="friend-time">
-                    {chat.lastMessage || "No messages yet"}
-                  </p>
-                </div>
-                {!chat.messageSeen && <span className="unread-badge"></span>}
-              </div>
-            ))
+          ) : searchResults.length ? (
+            renderChatList(searchResults)
           ) : (
             <div className="no-results">No users found</div>
           )
-        ) : existingChats.length > 0 ? (
-          existingChats.map((chat) => (
-            <div
-              onClick={() => handleChatSelect(chat)}
-              className={`friends ${chatUser?.id === chat.rId ? "active" : ""}`}
-              key={chat.messageId}
-            >
-              <img
-                src={chat.userData?.avatar || assets.profile_img}
-                alt={chat.userData?.name || chat.userData?.username}
-                onError={(e) => (e.target.src = assets.profile_img)}
-              />
-              <div className="friend-info">
-                <p className="friend-name">
-                  {chat.userData?.name || chat.userData?.username}
-                </p>
-                <p className="friend-time">
-                  {chat.lastMessage || "No messages yet"}
-                </p>
-              </div>
-              {!chat.messageSeen && <span className="unread-badge"></span>}
-            </div>
-          ))
+        ) : existingChats.length ? (
+          renderChatList(existingChats)
         ) : (
           <div className="no-chats">No existing chats</div>
         )}
@@ -248,3 +250,4 @@ const LeftSideBar = () => {
 };
 
 export default LeftSideBar;
+ 

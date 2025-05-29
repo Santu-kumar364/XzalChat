@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import "./Login.css";
 import assets from "../../assets/assets";
-import { signup , login} from "../../config/firebase";
- 
+import { signup, login, resetPass } from "../../config/firebase";
 
 const Login = () => {
   const [currState, setCurrState] = useState("Sign Up");
@@ -14,8 +13,7 @@ const Login = () => {
     e.preventDefault();
     if (currState === "Sign Up") {
       signup(username, email, password);
-    } 
-    else {
+    } else {
       login(email, password);
     }
   };
@@ -26,7 +24,7 @@ const Login = () => {
 
   return (
     <div className="login">
-      <img src={assets.logo_big} alt="App Logo" className="logo" />
+      <img src='./chat_logo.jpeg' alt="App Logo" className="logo" />
       <form onSubmit={handleSubmit} className="login-form">
         <h2>{currState}</h2>
 
@@ -76,12 +74,18 @@ const Login = () => {
         <div className="login-forget">
           <p className="login-toggle">
             {currState === "Sign Up"
-              ? "Already have an account?"
-              : "Don't have an account?"}
+              ? "Already have an account"
+              : "Don't have an account"}
             <span onClick={toggleState}>
               {currState === "Sign Up" ? " Login here" : " Sign Up"}
             </span>
           </p>
+          {currState === "Login" && (
+            <p className="login-toggle">
+              Forgot Password?
+              <span onClick={() => resetPass(email.trim())}> Click here</span>
+            </p>
+          )}
         </div>
       </form>
     </div>
@@ -89,3 +93,9 @@ const Login = () => {
 };
 
 export default Login;
+
+
+
+
+
+

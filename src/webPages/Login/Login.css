@@ -67,3 +67,12 @@
     cursor: pointer;
     text-decoration: underline;
 }
+
+@media (max-width:768px)  {
+    .login{
+       
+        justify-content: center;
+        flex-direction: column;
+        gap: 30px;
+    }
+}

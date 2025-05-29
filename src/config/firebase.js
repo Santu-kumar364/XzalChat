@@ -1,15 +1,15 @@
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { getFirestore, setDoc, doc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getFirestore, setDoc, doc, where, query, getDoc, getDocs } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCBmdD2PbinUYFR_cpBSl2VwpJ64zfVyxU",
-  authDomain: "xzalchat-35d25.firebaseapp.com",
-  projectId: "xzalchat-35d25",
-  storageBucket: "xzalchat-35d25.firebasestorage.app",
-  messagingSenderId: "259998782249",
-  appId: "1:259998782249:web:98bb1bd1f41ea535049d38"
+  apiKey: "AIzaSyBzAX10ASLsCGk5QiLe3f4njoGjHrwNJ0k",
+  authDomain: "xzalchat-30ee9.firebaseapp.com",
+  projectId: "xzalchat-30ee9",
+  storageBucket: "xzalchat-30ee9.firebasestorage.app",
+  messagingSenderId: "450019142924",
+  appId: "1:450019142924:web:b1ededd8a59e265d93ed29"
 };
 
 // Initialize Firebase
@@ -62,8 +62,34 @@ const logout = async () => {
 };
 
 
+const resetPass = async(email) => {
+  if(!email) {
+    toast.error("Enter your email")
+    return null;
+  }
+  try {
+    const userRef = collection(db, 'user');
+    const q = query(userRef,where("email", "==", email))
+    const querySnap = await getDocs(q);
+    if(!querySnap.empty) {
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Reset Email Sent")
+    } else{
+      toast.error("Email doesn't exists")
+    }
 
-export { signup, auth, db, app,login, logout };
+
+  }
+  catch {
+
+    console.error(error);
+    toast.error(error.message)
+  }
+}
+
+
+
+export { signup, auth, db, app,login, logout, resetPass };
 
 
 

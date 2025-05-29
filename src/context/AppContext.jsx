@@ -18,6 +18,7 @@ export const AppContextProvider = (props) => {
   const [messages, setMessages] = useState([]);
   const [messageId, setMessageId] = useState(null);
   const [chatUser, setChatUser] = useState(null);
+  const [chatDisplay, setChatDisplay] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -41,6 +42,20 @@ export const AppContextProvider = (props) => {
       }
     };
   }, [userData]);
+
+  
+useEffect(() => {
+  // Reset chat display state on window resize
+  const handleResize = () => {
+    if (window.innerWidth > 768) {
+      setChatDisplay(false);
+    }
+  };
+
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
 
   const loadUserData = async (uid) => {
     try {
@@ -92,6 +107,8 @@ export const AppContextProvider = (props) => {
     setMessageId,
     chatUser,
     setChatUser,
+    chatDisplay,
+    setChatDisplay
   };
 
   return (
@@ -102,4 +119,4 @@ export const AppContextProvider = (props) => {
 export default AppContextProvider;
 
 
- 
+  

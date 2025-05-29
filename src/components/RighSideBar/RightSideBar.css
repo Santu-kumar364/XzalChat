@@ -2,16 +2,12 @@
     color: white;
     background: #001030;
     position: relative;
-    height: 75vh;
+    height: 100vh;
     overflow-y: scroll;
+    flex: 1;
 }
 
  
-
- 
-
- 
-
 .dot {
     width: 8px;
     height: 8px;
@@ -106,12 +102,7 @@
     background-color: transparent;
 } 
 
-  
-
-
  
- 
-
 .rs-profile {
   padding: 20px;
   text-align: center;
@@ -145,14 +136,7 @@
 }
 
  
-
  
-
- 
- 
-
- 
-
 .no-media {
   grid-column: 1 / -1;
   text-align: center;
@@ -161,16 +145,7 @@
   margin: 20px 0;
 }
 
-/* .logout-btn {
-  margin: 20px;
-  padding: 10px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.2s;
-} */
+ 
 
 .logout-btn:hover {
   background: #d32f2f;

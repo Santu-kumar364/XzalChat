@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./Chat.css";
 import ChatBox from "../../components/ChatBox/ChatBox";
 import LeftSideBar from "../../components/LeftSideBar/LeftSideBar";
@@ -18,6 +18,4 @@ const Chat = () => {
 };
 
 export default Chat;
-
-
  
