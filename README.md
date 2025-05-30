@@ -42,4 +42,4 @@ XzalChat is a modern real-time chat application built with React and Firebase. I
  ![Screenshot 2025-05-31 013647](https://github.com/user-attachments/assets/0ce27b2e-cbde-4113-acd5-1d8cca2c6399)
 
 ## Contact
-##Project Link: https://santu-kumar364.github.io/XzalChat/
+### Project Link: https://santu-kumar364.github.io/XzalChat/
