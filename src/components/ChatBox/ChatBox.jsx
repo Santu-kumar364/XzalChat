@@ -1,5 +1,3 @@
- 
-
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./ChatBox.css";
 import assets from "../../assets/assets";
@@ -17,8 +15,16 @@ import { toast } from "react-toastify";
 import upload from "../../liberaries/upload";
 
 const ChatBox = () => {
-  const { userData, chatUser, messages, setMessages, messageId } =
-    useContext(AppContext);
+  const {
+    userData,
+    chatUser,
+    messages,
+    setMessages,
+    messageId,
+    setChatDisplay,
+    isMobile,
+    toggleRightSidebar
+  } = useContext(AppContext);
   const [input, setInput] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -27,12 +33,15 @@ const ChatBox = () => {
   useEffect(() => {
     if (!messageId) return;
 
-    const unsubscribe = onSnapshot(doc(db, "messages", messageId), (docSnap) => {
-      if (docSnap.exists()) {
-        setMessages(docSnap.data().messages || []);
-        scrollToBottom();
+    const unsubscribe = onSnapshot(
+      doc(db, "messages", messageId),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setMessages(docSnap.data().messages || []);
+          scrollToBottom();
+        }
       }
-    });
+    );
 
     return () => unsubscribe();
   }, [messageId]);
@@ -79,9 +88,7 @@ const ChatBox = () => {
     };
 
     const lastMessage =
-      input.length > 25
-        ? `${input.slice(0, 25)}...`
-        : input || "Image";
+      input.length > 25 ? `${input.slice(0, 25)}...` : input || "Image";
 
     try {
       await Promise.all([
@@ -102,7 +109,12 @@ const ChatBox = () => {
     }
   };
 
-  const updateChatDocument = async (userId, messageId, lastMessage, isSender) => {
+  const updateChatDocument = async (
+    userId,
+    messageId,
+    lastMessage,
+    isSender
+  ) => {
     const userChatRef = doc(db, "chats", userId);
     try {
       const chatSnap = await getDoc(userChatRef);
@@ -112,7 +124,7 @@ const ChatBox = () => {
       const updated = {
         rId: isSender ? chatUser.id : userData.id,
         lastMessage,
-        updatedAt:Date.now(),
+        updatedAt: Date.now(),
         messageId,
         messageSeen: isSender,
       };
@@ -147,6 +159,10 @@ const ChatBox = () => {
     }
   };
 
+  const handleBackClick = () => {
+    setChatDisplay(false);
+  };
+
   if (!chatUser) {
     return (
       <div className="chat-welcome">
@@ -159,16 +175,22 @@ const ChatBox = () => {
   return (
     <div className="chat-box">
       <div className="chat-user">
+        {isMobile && (
+          <img
+            src={assets.back_arrow}
+            alt="Back"
+            className="back-button"
+            onClick={handleBackClick}
+          />
+        )}
         <img
+          className="user_avatar"
           src={chatUser.avatar || assets.Myphoto}
           alt="User"
           onError={(e) => (e.target.src = assets.Myphoto)}
         />
-        <p>
-          {chatUser.name || chatUser.username}
-          <img className="dot" src={assets.green_dot} alt="Online" />
-        </p>
-        <img src={assets.help_icon} alt="Help" className="help" />
+        <p>{chatUser.name || chatUser.username}</p>
+        <img src={assets.help_icon} alt="Help" className="help"  onClick={toggleRightSidebar()} />
       </div>
 
       <div className="chat-messages">
@@ -181,7 +203,11 @@ const ChatBox = () => {
               }`}
             >
               {msg.content.imageUrl && (
-                <img className="uploaded-image" src={msg.content.imageUrl} alt="uploaded" />
+                <img
+                  className="uploaded-image"
+                  src={msg.content.imageUrl}
+                  alt="uploaded"
+                />
               )}
               {msg.content.text && (
                 <p className="text-message">{msg.content.text}</p>
@@ -201,7 +227,14 @@ const ChatBox = () => {
         {preview && (
           <div className="image-preview">
             <img src={preview} alt="Preview" />
-            <button onClick={() => { setImage(null); setPreview(null); }}>✕</button>
+            <button
+              onClick={() => {
+                setImage(null);
+                setPreview(null);
+              }}
+            >
+              ✕
+            </button>
           </div>
         )}
         <input
@@ -230,8 +263,3 @@ const ChatBox = () => {
 };
 
 export default ChatBox;
-
-
-
-
-  

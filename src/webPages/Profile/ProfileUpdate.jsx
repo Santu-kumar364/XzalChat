@@ -109,7 +109,7 @@ const ProfileUpdate = () => {
         <img
           className="profile-pic"
           src={
-            image ? URL.createObjectURL(image) :prevImage? prevImage : "/chat_logo.jpeg"
+            image ? URL.createObjectURL(image) :prevImage? prevImage : '/logo3.jpeg'
           }
           alt="Profile Preview"
         />

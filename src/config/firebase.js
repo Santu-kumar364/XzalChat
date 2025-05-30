@@ -1,15 +1,15 @@
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { getFirestore, setDoc, doc, where, query, getDoc, getDocs } from "firebase/firestore";
+import { getFirestore, setDoc, doc, where, query, getDocs } from "firebase/firestore";
 import { toast } from "react-toastify";
-
+ 
 const firebaseConfig = {
-  apiKey: "AIzaSyBzAX10ASLsCGk5QiLe3f4njoGjHrwNJ0k",
-  authDomain: "xzalchat-30ee9.firebaseapp.com",
-  projectId: "xzalchat-30ee9",
-  storageBucket: "xzalchat-30ee9.firebasestorage.app",
-  messagingSenderId: "450019142924",
-  appId: "1:450019142924:web:b1ededd8a59e265d93ed29"
+  apiKey: "AIzaSyDDDYDixZ9hyI71p3_1XNUY9-hVw-saPFY",
+  authDomain: "xzalchat-d515b.firebaseapp.com",
+  projectId: "xzalchat-d515b",
+  storageBucket: "xzalchat-d515b.firebasestorage.app",
+  messagingSenderId: "731213793282",
+  appId: "1:731213793282:web:eb4aa01d7a532fdf047f1b"
 };
 
 // Initialize Firebase

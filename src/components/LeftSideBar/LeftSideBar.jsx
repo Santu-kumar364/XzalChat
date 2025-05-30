@@ -1,4 +1,3 @@
- 
 import React, { useContext, useState, useEffect } from "react";
 import "./LeftSideBar.css";
 import assets from "../../assets/assets";
@@ -35,6 +34,7 @@ const LeftSideBar = () => {
     setMessageId,
     chatDisplay,
     setChatDisplay,
+    isMobile
   } = useContext(AppContext);
 
   useEffect(() => {
@@ -157,25 +157,24 @@ const LeftSideBar = () => {
   };
 
   const handleChatSelect = async (chat) => {
-  if (chat.messageId) {
-    setMessageId(chat.messageId);
-    setChatUser({
-      id: chat.rId,
-      ...chat.userData,
-    });
-  } else {
-    await addChat(chat.userData);
-  }
+    if (chat.messageId) {
+      setMessageId(chat.messageId);
+      setChatUser({
+        id: chat.rId,
+        ...chat.userData,
+      });
+    } else {
+      await addChat(chat.userData);
+    }
 
-  setSearchQuery("");
-  setSearchResults([]);
-  setIsSearching(false);
-  
-  // Show chat box on mobile
-  if (window.innerWidth <= 768) {
-    setChatDisplay(true);
-  }
-};
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearching(false);
+    
+    if (isMobile) {
+      setChatDisplay(true);
+    }
+  };
 
   const renderChatList = (list) =>
     list.map((chat) => (
@@ -203,7 +202,7 @@ const LeftSideBar = () => {
     <div className={`ls ${chatDisplay ? "hidden" : ""}`}>
       <div className="ls-top">
         <div className="ls-nav">
-          <img src="/chat_logo.jpeg" alt="Chat App Logo" className="logo" />
+          <img src={assets.logo2} alt="Chat App Logo" className="logo" />
           <div className="menu">
             <img
               src={assets.menu_icon}
@@ -250,4 +249,3 @@ const LeftSideBar = () => {
 };
 
 export default LeftSideBar;
- 

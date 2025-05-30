@@ -1,238 +1,201 @@
-
-
- .ls {
-    background: #001030;
-    color: white;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+.ls {
+  width: 30%;
+  height: 100%;
+  background-color: #fff;
+  border-right: 1px solid #e9edef;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .ls-top {
-    padding: 20px;
-    position: sticky;
-    top: 0;
-    background: #001030;
-    z-index: 1;
+  padding: 10px 16px;
+  background-color: #f0f2f5;
+  border-bottom: 1px solid #e9edef;
 }
 
 .ls-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: -10px;
+  margin-top: -15px;
 }
 
-.ls-nav .logo {
-    height: 25px;
-    object-fit: contain;
+.logo {
+  width: 110px;
+  height: 95px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-.ls-nav .menu {
-    position: relative;
-    padding: 10px 0px;
+.menu {
+  position: relative;
+  cursor: pointer;
 }
 
-.ls-nav .menu img {
-    max-height: 20px;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+.menu img {
+  width: 24px;
+  height: 24px;
+   
+ 
 }
 
-.ls-nav .menu img:hover {
-    opacity: 1;
+.sub-menu {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 8px 0;
+  z-index: 100;
+  width: 150px;
 }
 
-.menu .sub-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 130px;
-    padding: 20px;
-    border-radius: 7px;
-    background-color: white;
-    color: black;
+ 
+.sub-menu p {
+  padding: 8px 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.sub-menu p:hover {
+  background-color: #f5f5f5;
 }
 
 .sub-menu hr {
-    border: none;
-    height: 1px;
-    background: #040404;
-    margin: 8px 0px;
-}
-
-.sub-menu p {
-    cursor: pointer;
-    font-size: 14px;
+  border: none;
+  border-top: 1px solid #e9edef;
+  margin: 4px 0;
 }
 
 .ls-search {
-    background-color: #002670;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin: 0 20px 10px;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 50px;
+  padding: 8px 12px;
 }
 
 .ls-search img {
-    width: 16px;
-    opacity: 0.7;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  opacity: 0.6;
 }
 
 .ls-search input {
-    width: 100%;
-    background-color: transparent;
-    border: none;
-    color: white;
-    outline: none;
-    font-size: 13px;
-}
-
-.ls-search input::placeholder {
-    color: #c8c8c8;
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
 }
 
 .ls-list {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-bottom: 10px;
+  flex: 1;
+  overflow-y: auto;
 }
 
-.ls-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.ls-list::-webkit-scrollbar-thumb {
-    background-color: #0077ff;
-    border-radius: 3px;
-}
-
-.ls-list::-webkit-scrollbar-track {
-    background-color: #002670;
-}
-
- 
 .friends {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #e9edef;
 }
 
 .friends:hover {
-    background-color: #0077ff;
+  background-color: #f5f5f5;
 }
 
 .friends.active {
-    background-color: rgba(0, 119, 255, 0.2);
+  background-color: #e9edef;
 }
 
 .friends img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
 }
 
 .friend-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
-.friend-name-time {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.friend-name-time p {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.friend-name-time .time {
-    font-size: 11px;
-    color: #9f9f9f;
-}
-
-.last-message-unread {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.last-message {
-    font-size: 12px;
-    color: #9f9f9f;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 70%;
-}
-
-.unread-count {
-    background-color: #0077ff;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: bold;
-}
-
-.friends:hover .last-message,
-.friends:hover .time {
-    color: white !important;
-}
- 
-.no-chats,
-.loading,
-.no-results {
-    text-align: center;
-    padding: 20px;
-    color: #9f9f9f;
-    font-size: 14px;
-}
-
-
-.unread-badge {
-  width: 8px;
-  height: 8px;
-  background-color: #0077ff;
-  border-radius: 50%;
-  margin-left: auto;
-}
-
-.friend-time {
-  font-size: 12px;
-  color: #9f9f9f;
+.friend-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
 }
 
-.friends:hover .friend-time {
-  color: white;
-} 
+.friend-time {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #667781;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.unread-badge {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #25d366;
+  border-radius: 50%;
+}
+
+.loading,
+.no-results,
+.no-chats {
+  padding: 20px;
+  text-align: center;
+  color: #667781;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .ls {
+    width: 100%;
+    height: 100%;
+  }
+
+  .friends {
+    padding: 10px 12px;
+  }
+
+  .friends img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .ls-search{
+    height: 40px;
+  }
+
+  .ls-search:hover {
+    border: 1px solid rgb(11, 9, 9);
+  }
+
+  .logo {
+    width: 87px; 
+   }
+
+    
+   
+}
+
+ 
 
 
-  
+         
+
+

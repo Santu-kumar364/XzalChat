@@ -24,7 +24,7 @@ const Login = () => {
 
   return (
     <div className="login">
-      <img src='./chat_logo.jpeg' alt="App Logo" className="logo" />
+      <img src={assets.logo2} alt="App Logo" className="logo" />
       <form onSubmit={handleSubmit} className="login-form">
         <h2>{currState}</h2>
 
