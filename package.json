@@ -3,15 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://santu-kumar364.github.io/XzalChat",
   "scripts": {
-    "lint": "eslint .",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/XzalChat/",
     "preview": "vite preview",
-    "build:vercel": "vite build",
-    "build:gh-pages": "vite build --base=/XzalChat/",
-    "predeploy": "npm run build:gh-pages",
-    "deploy": "gh-pages -d dist"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "lint": "eslint ."
   },
   "dependencies": {
     "firebase": "^11.8.1",
