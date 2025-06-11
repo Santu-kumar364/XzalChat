@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Chat from "./webPages/Chat/Chat";
 import ProfileUpdate from "./webPages/Profile/ProfileUpdate";
 import Login from "./webPages/Login/Login";
@@ -14,7 +14,7 @@ const App = () => {
   const {loadUserData }  = useContext(AppContext);
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         navigate("/chat");
          
@@ -23,6 +23,7 @@ const App = () => {
         navigate("/");
       }
     });
+    return () => unsubscribe();
   }, []);
 
   return (

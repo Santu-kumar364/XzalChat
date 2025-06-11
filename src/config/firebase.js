@@ -68,7 +68,7 @@ const resetPass = async(email) => {
     return null;
   }
   try {
-    const userRef = collection(db, 'user');
+    const userRef = collection(db, 'users');
     const q = query(userRef,where("email", "==", email))
     const querySnap = await getDocs(q);
     if(!querySnap.empty) {
@@ -77,17 +77,12 @@ const resetPass = async(email) => {
     } else{
       toast.error("Email doesn't exists")
     }
-
-
   }
-  catch {
-
+  catch(error) {
     console.error(error);
     toast.error(error.message)
   }
 }
-
-
 
 export { signup, auth, db, app,login, logout, resetPass };
 

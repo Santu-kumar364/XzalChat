@@ -54,7 +54,7 @@ const ProfileUpdate = () => {
   };
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
         const docRef = doc(db, "users", user.uid);
@@ -68,6 +68,8 @@ const ProfileUpdate = () => {
         navigate("/");
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
   return (
