@@ -18,6 +18,9 @@ const ProfileUpdate = () => {
   const [prevImage, setPrevImage] = useState(null);
   const { setUserData } = useContext(AppContext);
 
+  // Add a state for the preview URL
+  const [previewUrl, setPreviewUrl] = useState("");
+
   const profileUpdate = async (event) => {
     event.preventDefault();
     try {
@@ -53,6 +56,21 @@ const ProfileUpdate = () => {
     }
   };
 
+  // Handle image preview
+  useEffect(() => {
+    if (image) {
+      const objectUrl = URL.createObjectURL(image);
+      setPreviewUrl(objectUrl);
+
+      // Clean up the object URL when component unmounts or image changes
+      return () => URL.revokeObjectURL(objectUrl);
+    } else if (prevImage) {
+      setPreviewUrl(prevImage);
+    } else {
+      setPreviewUrl('/logo3.jpeg');
+    }
+  }, [image, prevImage]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -86,7 +104,7 @@ const ProfileUpdate = () => {
               hidden
             />
             <img
-              src={image ? URL.createObjectURL(image) : assets.avatar_icon}
+              src={image ? URL.createObjectURL(image) :  previewUrl}
               alt="Preview"
             />
             Upload profile picture
@@ -110,9 +128,7 @@ const ProfileUpdate = () => {
 
         <img
           className="profile-pic"
-          src={
-            image ? URL.createObjectURL(image) :prevImage? prevImage : '/logo3.jpeg'
-          }
+          src={previewUrl}
           alt="Profile Preview"
         />
       </div>

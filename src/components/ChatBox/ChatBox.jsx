@@ -23,12 +23,33 @@ const ChatBox = () => {
     messageId,
     setChatDisplay,
     isMobile,
-    toggleRightSidebar
+    toggleRightSidebar,
   } = useContext(AppContext);
   const [input, setInput] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const messagesEndRef = useRef(null);
+
+  // useEffect(() => {
+  //   console.log("🔍 DEBUG USER DATA:", {
+  //     userDataId: userData?.id,
+  //     userDataType: typeof userData?.id,
+  //     chatUserId: chatUser?.id,
+  //     messagesCount: messages.length,
+  //   });
+
+  //   if (messages.length > 0) {
+  //     console.log(
+  //       "🔍 DEBUG MESSAGES:",
+  //       messages.map((msg) => ({
+  //         sId: msg.sId,
+  //         sIdType: typeof msg.sId,
+  //         isEqual: msg.sId === userData?.id,
+  //         text: msg.content.text,
+  //       }))
+  //     );
+  //   }
+  // }, [messages, userData, chatUser]);
 
   useEffect(() => {
     if (!messageId) return;
@@ -190,31 +211,46 @@ const ChatBox = () => {
           onError={(e) => (e.target.src = assets.Myphoto)}
         />
         <p>{chatUser.name || chatUser.username}</p>
-        <img src={assets.help_icon} alt="Help" className="help"  onClick={toggleRightSidebar()} />
+        <img
+          src={assets.help_icon}
+          alt="Help"
+          className="help"
+          onClick={toggleRightSidebar}
+        />
       </div>
 
       <div className="chat-messages">
         {messages.length > 0 ? (
-          messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`message ${
-                msg.sId === userData.id ? "sent" : "received"
-              }`}
-            >
-              {msg.content.imageUrl && (
-                <img
-                  className="uploaded-image"
-                  src={msg.content.imageUrl}
-                  alt="uploaded"
-                />
-              )}
-              {msg.content.text && (
-                <p className="text-message">{msg.content.text}</p>
-              )}
-              <span>{msg.timestamp}</span>
-            </div>
-          ))
+          messages.map((msg, idx) => {
+            // Debug each message
+            const isSent = msg.sId === userData?.id;
+            // console.log(`🎯 Message ${idx}:`, {
+            //   senderId: msg.sId,
+            //   currentUserId: userData?.id,
+            //   isSent: isSent,
+            //   idsMatch: msg.sId === userData?.id,
+            //   text: msg.content.text,
+            // });
+
+            return (
+              <div
+                key={idx}
+                className={`message ${isSent ? "sent" : "received"}`}
+              >
+                {msg.content.imageUrl && (
+                  <img
+                    className="uploaded-image"
+                    src={msg.content.imageUrl}
+                    alt="uploaded"
+                  />
+                )}
+                {msg.content.text && (
+                  <p className="text-message">{msg.content.text}</p>
+                )}
+                <span>{msg.timestamp}</span>
+              </div>
+            );
+          })
         ) : (
           <div className="no-messages">
             Start conversation with {chatUser.name || chatUser.username}

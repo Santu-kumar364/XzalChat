@@ -2,12 +2,14 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  serverTimestamp,
   updateDoc,
+  serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
-import { createContext, useEffect, useRef, useState } from "react";
-import { auth, db } from "../config/firebase";
+import { createContext, useEffect, useState } from "react";
+import { auth, db, goOnline, updateUserStatus } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
 
 export const AppContext = createContext();
 
@@ -19,13 +21,14 @@ export const AppContextProvider = (props) => {
   const [messageId, setMessageId] = useState(null);
   const [chatUser, setChatUser] = useState(null);
   const [chatDisplay, setChatDisplay] = useState(false);
-  const [rightSidebarVisible, setRightSidebarVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [loading, setLoading] = useState(true);
 
- const toggleRightSidebar = () => {
-  console.log("Toggling sidebar. Current state:", rightSidebarVisible);
-  setRightSidebarVisible(prev => !prev);
-};
+  const [rightSidebarVisible, setRightSidebarVisible] = useState(false);
+
+  const toggleRightSidebar = () => {
+    setRightSidebarVisible((prev) => !prev);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -39,71 +42,116 @@ export const AppContextProvider = (props) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    if (!userData?.id) return; // Ensure userData.id exists
-
-    const chatRef = doc(db, "chats", userData.id);
-    const unSub = onSnapshot(chatRef, async (res) => {
-      if (!res.exists()) return;
-
-      const chatItems = res.data().chatData || [];
-      const tempData = [];
-
-      for (const item of chatItems) {
-        // Skip if userId is missing
-        if (!item?.rId) {
-          console.warn("Skipping item with missing userId:", item);
-          continue;
-        }
-
-        try {
-          const userRef = doc(db, "users", item.rId);
-          const userSnap = await getDoc(userRef);
-
-          if (userSnap.exists()) {
-            const userData = userSnap.data();
-            tempData.push({ ...item, userData });
-          } else {
-            console.warn("User not found:", item.rId);
-          }
-        } catch (error) {
-          console.error("Error loading user data:", error);
-        }
-      }
-
-      setChatData(tempData.sort((a, b) => b.createdAt - a.createdAt));
-    });
-
-    return () => unSub();
-  }, [userData?.id]); // Only re-run if userData.id changes
-
   const loadUserData = async (uid) => {
+    if (!uid) {
+      console.log("No UID provided");
+      navigate("/");
+      return;
+    }
+
+    setLoading(true);
+    console.log("Loading user data for:", uid);
+
     try {
       const userRef = doc(db, "users", uid);
       const userSnap = await getDoc(userRef);
-      const userData = userSnap.data();
 
-      setUserData(userData);
-      await updateDoc(userRef, { lastSeen: serverTimestamp() });
+      if (!userSnap.exists()) {
+        console.log("User document not found - creating new user...");
 
-      if (userData.avatar && userData.name) {
-        navigate("/chat");
-      } else {
+        // Get current auth user for basic info
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+          console.log("No auth user found");
+          navigate("/");
+          return;
+        }
+
+        // Create new user document
+        const newUserData = {
+          name: currentUser.displayName || "",
+          email: currentUser.email,
+          username: currentUser.email.split("@")[0],
+          avatar: currentUser.photoURL || "",
+          bio: "",
+          lastSeen: serverTimestamp(),
+          createdAt: serverTimestamp(),
+        };
+
+        await setDoc(userRef, newUserData);
+        console.log("✅ New user document created:", newUserData);
+
+        // Also create chats document
+        const chatsRef = doc(db, "chats", uid);
+        await setDoc(chatsRef, {
+          chatData: [],
+          createdAt: serverTimestamp(),
+        });
+        console.log("✅ New chats document created");
+
+        setUserData({ id: uid, ...newUserData });
+
+        console.log("Navigating to profile for completion");
         navigate("/profile");
+        return;
       }
 
-      const interval = setInterval(async () => {
-        if (auth.currentUser) {
-          await updateDoc(userRef, { lastSeen: serverTimestamp() });
-        }
-      }, 60000);
+      const userData = userSnap.data();
+      console.log("✅ User data loaded:", userData);
+      setUserData({ id: uid, ...userData });
 
-      return () => clearInterval(interval);
+      // Update user status
+      try {
+        await updateUserStatus(uid, true);
+      } catch (statusError) {
+        console.warn("Could not update user status:", statusError);
+      }
+
+      // Navigate based on profile completion
+      if (userData.avatar && userData.name) {
+        console.log("Profile complete, navigating to chat");
+        navigate("/chat");
+      } else {
+        console.log("Profile incomplete, navigating to profile setup");
+        navigate("/profile");
+      }
     } catch (error) {
       console.error("Error loading user data:", error);
-      navigate("/");
+
+      if (error.code === "permission-denied") {
+        console.error("Permission denied - check Firestore rules");
+        toast.error("Database permission error. Please refresh.");
+      } else {
+        console.log("Other error, navigating to home");
+        navigate("/");
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log("Setting up auth state listener...");
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed:", user);
+
+      if (user) {
+        console.log("User authenticated:", user.uid);
+        loadUserData(user.uid);
+      } else {
+        console.log("No user authenticated");
+        setUserData(null);
+        setLoading(false);
+        navigate("/");
+      }
+    });
+
+    return () => {
+      console.log("Cleaning up auth listener");
+      unsubscribe();
+    };
+  }, []);
 
   const value = {
     userData,
@@ -123,6 +171,7 @@ export const AppContextProvider = (props) => {
     rightSidebarVisible,
     setRightSidebarVisible,
     toggleRightSidebar,
+    loading,
   };
 
   return (

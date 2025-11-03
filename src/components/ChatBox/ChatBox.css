@@ -18,8 +18,8 @@
 }
 
 .chat-user img:first-child {
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 12px;
@@ -37,8 +37,8 @@
 }
 
 .help {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 
@@ -228,11 +228,7 @@
   .message {
     padding: 5px 5px 0px 5px; 
   }
-
-  .back-button{
-    width: 10px;
-    height: 10px;
-  }
+ 
  
 } 
  
